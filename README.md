@@ -1,6 +1,6 @@
 # AI Document Assistant
 
-An end-to-end Retrieval-Augmented Generation (RAG) system that lets users upload documents and ask natural-language questions, with answers grounded in the document content via semantic retrieval and cross-encoder reranking.
+An end-to-end Retrieval-Augmented Generation (RAG) system for research paper question answering — combining hybrid retrieval, cross-encoder reranking, and guardrails to deliver accurate, grounded answers instead of hallucinated ones.
 
 🔗 **Live Repo:** [github.com/nityashree0508/AI-Document-Assistant](https://github.com/nityashree0508/AI-Document-Assistant)
 
@@ -8,52 +8,75 @@ An end-to-end Retrieval-Augmented Generation (RAG) system that lets users upload
 
 ## Overview
 
-Traditional keyword search fails when users don't know the exact terms used in a document. This project solves that by combining dense semantic retrieval with LLM-based generation, orchestrated through a structured LangGraph workflow — allowing users to query PDFs conversationally and get accurate, context-grounded answers instead of hallucinated ones.
+Standard RAG pipelines relying on pure semantic search often miss relevant chunks when queries use different vocabulary than the source document, or fail to reject irrelevant/adversarial queries. This project addresses that with a hybrid retrieval strategy (dense + keyword search fused via RRF), cross-encoder reranking for precision, automatic query rewriting, and guardrails against prompt injection and off-topic queries — orchestrated through a structured LangGraph workflow.
 
-## Features
+## ✨ Features
 
-- 📄 **PDF Ingestion Pipeline** — upload and parse documents automatically
-- ✂️ **Recursive Document Chunking** — splits text intelligently to preserve context across chunk boundaries
-- 🧠 **BGE Embedding Model** — converts text chunks into dense vector representations
-- ⚡ **FAISS Vector Store** — fast similarity search over embedded chunks
-- 🎯 **Cross-Encoder Reranking** — re-scores retrieved chunks for higher precision before generation
-- 🔁 **LangGraph Orchestration** — structured, stateful RAG workflow instead of a single linear chain
-- 💬 **Gemini-based Answer Generation** — grounded, context-aware responses using custom prompt templates
-- 🖥️ **FastAPI Backend + Streamlit UI** — clean API layer with an interactive frontend for real-time Q&A
+- 📄 Research paper question answering
+- 🔍 Hybrid Retrieval (FAISS + BM25 + RRF)
+- 🎯 Cross-Encoder reranking for improved relevance
+- 🧠 LangGraph workflow orchestration
+- ✍️ Automatic query rewriting
+- 🛡️ Prompt injection & off-topic query guardrails
+- 🤖 Google Gemini 2.5 Flash integration
+- ⚡ FastAPI REST backend
+- 🌐 Streamlit web interface
+- 📚 Semantic document search using BGE embeddings
 
-## Architecture
+## 🛠️ Tech Stack
 
-```
-User Query
-    │
-    ▼
-PDF Ingestion → Recursive Chunking → BGE Embeddings → FAISS Index
-                                                            │
-                                                            ▼
-                                              Semantic Retrieval (top-k chunks)
-                                                            │
-                                                            ▼
-                                              Cross-Encoder Reranking
-                                                            │
-                                                            ▼
-                                        LangGraph Workflow → Gemini (Answer Generation)
-                                                            │
-                                                            ▼
-                                                  Streamlit UI (Response)
-```
-
-## Tech Stack
-
-| Layer | Technology |
+| Category | Technology |
 |---|---|
-| Backend | FastAPI |
+| Language | Python |
 | Frontend | Streamlit |
-| Orchestration | LangGraph |
-| Embeddings | BGE |
-| Vector Store | FAISS |
-| Reranking | Cross-Encoder |
-| LLM | Google Gemini |
-| Prompting | ChatPromptTemplate (LangChain) |
+| Backend | FastAPI, Uvicorn |
+| LLM | Google Gemini 2.5 Flash |
+| Frameworks | LangChain, LangGraph |
+| Embeddings | BAAI BGE Small v1.5 |
+| Vector Database | FAISS |
+| Keyword Search | BM25 |
+| Fusion | Reciprocal Rank Fusion (RRF) |
+| Reranker | MS MARCO MiniLM Cross-Encoder |
+| Evaluation | RAGAS (integration in progress) |
+
+## 🏗️ Architecture
+
+```
+PDF
+ │
+ ▼
+Document Loader
+ │
+ ▼
+Recursive Text Chunking
+ │
+ ▼
+BGE Embeddings
+ │
+ ▼
+FAISS Vector Store
+ │
+ ▼
+Hybrid Retrieval (FAISS + BM25)
+ │
+ ▼
+Reciprocal Rank Fusion
+ │
+ ▼
+Cross-Encoder Reranker
+ │
+ ▼
+Guardrail
+ │
+ ▼
+Query Rewriter
+ │
+ ▼
+Gemini 2.5 Flash
+ │
+ ▼
+Answer
+```
 
 ## Setup & Installation
 
@@ -83,16 +106,16 @@ streamlit run app.py
 
 ## Usage
 
-1. Launch the app and upload a PDF document
+1. Launch the app and upload a research paper (PDF)
 2. Ask a question related to the document's content
-3. The system retrieves the most relevant chunks, reranks them, and generates a grounded answer
+3. The system retrieves relevant chunks via hybrid search, fuses and reranks them, rewrites the query if needed, applies guardrails, and generates a grounded answer via Gemini 2.5 Flash
 
 ## Future Improvements
 
+- Full RAGAS evaluation integration
 - Multi-document support with source citation
 - Conversation memory for follow-up questions
-- Support for additional file formats (DOCX, TXT)
-- Deployment via Docker
+- Docker deployment
 
 ## Author
 
